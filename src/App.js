@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Events, PinsOfColors } from './utils';
-import { ARDUINO_CODE } from './simulation';
+import { ARDUINO_CODE } from './build';
 import '@wokwi/elements';
 
 export default function App() {
@@ -12,6 +12,7 @@ export default function App() {
 	const [whState, setWhState] = React.useState('');
 	const [ylState, setYlState] = React.useState('');
 	const [orState, setOrState] = React.useState('');
+	const [pvmState, setPvmState] = React.useState('');
 
 	const COLORS = {
 		'red': [rlState, setRlState],
@@ -27,6 +28,8 @@ export default function App() {
 	for (let [color, [state, setState]] of Object.entries(COLORS)) {
 		ledHTML.push(<wokwi-led color={color} value={state} label={PinsOfColors[color]} />)
 	}
+
+	ledHTML.push(<wokwi-led color="blue" value={pvmState} brightness={pvmState} label="PVM 11" />) // Add pvm led.
 
 
 	const setupWorker = (worker) => {
@@ -54,6 +57,11 @@ export default function App() {
 							COLORS[color][0] = updatedLedStates[color]
 						}
 					}
+					break;
+				case Events.pvm:
+					let brightness = e.data.message;
+					console.log(brightness);
+					setPvmState(brightness);
 					break;
 				default:
 					break;
