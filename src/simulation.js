@@ -31,6 +31,9 @@ const runner = async () => {
         let ledLowCycles = 0;
         let highSpikeCount = 0;
         const pvmLedEventListener = () => {
+            //TODO:: There is little bug that it cant read %100 duty cycle.
+            // Because on %100 duty cycle there is no high spikes. Fix this later
+
             const pin11State = board.portB.pinState(3); // Port 11 corresponds to portB 3 
             if (lastState !== pin11State) {
                 const delta = board.cpu.cycles - lastStateCycles;
@@ -45,7 +48,7 @@ const runner = async () => {
 
                 // 2 sequencial low to high pulse spike mean 1 full widht pulse. Since arduino default pvm period is 2ms 
                 // This block exptected to run every (pulseCount - 1)*2 ms (if microcontroller runs on 16 MHZ).
-                const pulseCount = 50;
+                const pulseCount = 2;
                 if (highSpikeCount % pulseCount === 0) {
                     let new_brightness = ledHighCycles / (ledHighCycles + ledLowCycles);
                     highSpikeCount = 1;
