@@ -10,6 +10,8 @@ import {
     timer1Config,
     timer2Config,
     portCConfig,
+    AVRUSART,
+    usart0Config,
 } from 'avr8js';
 
 import { parseHex } from './hex-parser';
@@ -26,11 +28,12 @@ export class AVRBoard {
         this.portD = new AVRIOPort(this.cpu, portDConfig);
         this.portB = new AVRIOPort(this.cpu, portBConfig);
         this.timer0 = new AVRTimer(this.cpu, timer0Config);
-        this.timer1 = new AVRTimer(this.cpu, timer1Config);
-        this.timer2 = new AVRTimer(this.cpu, timer2Config);
+        this.timer1 = new AVRTimer(this.cpu, timer1Config); // Neede for pvm functionality.
+        this.timer2 = new AVRTimer(this.cpu, timer2Config); // Needed for pvm functionality.
         this.portB = new AVRIOPort(this.cpu, portBConfig);
         this.portC = new AVRIOPort(this.cpu, portCConfig);
         this.portD = new AVRIOPort(this.cpu, portDConfig);
+        this.usart = new AVRUSART(this.cpu, usart0Config, this.CLOCK_SPEED);
 
     }
 

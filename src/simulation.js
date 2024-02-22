@@ -15,15 +15,6 @@ const runner = async () => {
         const hex = await buildHex();
         let board = new AVRBoard(hex);
 
-
-        // Run nearly every 1 second and measure how cpu time
-        // let counter = 0; // Approximate real time counter
-        // const clock_speed = board.CLOCK_SPEED;
-        // setInterval(() => {
-        //     counter += 1;
-        //     postMessage({ "eventCode": Events.info, "message": `Normal Time: ${counter}, CPU time: ${cpu.cycles / clock_speed}, type: ${typeof cpu.cycles}` })
-        // }, 1000)
-
         const ledEventListener = () => {
             let led_states = {};
             for (let [color, pin_number] of Object.entries(PinsOfColors)) {
@@ -39,7 +30,6 @@ const runner = async () => {
         let ledHighCycles = 0;
         let ledLowCycles = 0;
         let highSpikeCount = 0;
-
         const pvmLedEventListener = () => {
             const pin11State = board.portB.pinState(3); // Port 11 corresponds to portB 3 
             if (lastState !== pin11State) {
@@ -47,13 +37,16 @@ const runner = async () => {
                 if (lastState === PinState.High) {
                     ledHighCycles += delta;
                 } else {
-                    ledLowCycles += highSpikeCount && delta;
+                    ledLowCycles += highSpikeCount && delta; // In order to calculate pulse width correctly ignore trailing lows at the beggining of sequnce.
                     highSpikeCount += 1;
                 }
                 lastState = pin11State;
                 lastStateCycles = board.cpu.cycles;
 
-                if (highSpikeCount % 2 === 0) {
+                // 2 sequencial low to high pulse spike mean 1 full widht pulse. Since arduino default pvm period is 2ms 
+                // This block exptected to run every (pulseCount - 1)*2 ms (if microcontroller runs on 16 MHZ).
+                const pulseCount = 50;
+                if (highSpikeCount % pulseCount === 0) {
                     let new_brightness = ledHighCycles / (ledHighCycles + ledLowCycles);
                     highSpikeCount = 1;
                     ledHighCycles = 0;
@@ -62,8 +55,11 @@ const runner = async () => {
                 }
             }
         }
-
         board.portB.addListener(pvmLedEventListener);
+
+        board.usart.onByteTransmit = (value) => {
+            postMessage({ "eventCode": Events.printScreen, "message": String.fromCharCode(value) });
+        }
 
         board.execute();
     } catch (err) {

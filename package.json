@@ -6,7 +6,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
-    "@wokwi/elements": "^0.18.0",
+    "@wokwi/elements": "^1.4.10",
     "avr8js": "^0.20.1",
     "buffer": "^6.0.3",
     "intel-hex": "^0.2.0",

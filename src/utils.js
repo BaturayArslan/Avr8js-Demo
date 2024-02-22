@@ -5,6 +5,8 @@ export const Events = {
     "info": 4,
     "ledChange": 5,
     "pvm": 6,
+    "printScreen": 7,
+    "screenNewLine": 8,
 }
 
 export const PinsOfColors = {
